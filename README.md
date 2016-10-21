@@ -1,11 +1,11 @@
-Библиотеки для работы:
+# Библиотеки для работы:
 
-https://github.com/taka-wang/py-beacon
-https://github.com/switchdoclabs/iBeacon-Scanner-
+* https://github.com/taka-wang/py-beacon
+* https://github.com/switchdoclabs/iBeacon-Scanner-
 
-Пример кода определения расстояния:
+# Пример кода определения расстояния:
 
-function get_distance(rssi, tx_power) {
+`function get_distance(rssi, tx_power) {
    if (rssi == 0) {
       return -1; // Невозможно определить расстояние
    }
@@ -15,4 +15,4 @@ function get_distance(rssi, tx_power) {
    } else {
       return 0.89976 * Math.pow(ratio, 7.7095) + 0.111;
    }
-}
+}`
