@@ -9,6 +9,12 @@ major = "4660"
 minor = {"6966": "1", "6967": "2", "6968" : "3", "6969" : "4"}
 startUnit = []
 
+def ratio(rssi,tx_rate):
+        rssi = int(rssi) * -1
+        tx_rate = int(tx_rate) * -1
+        ratio = float(rssi) / tx_rate
+        return ratio
+
 def beconTracking(ibecon):
         print "Thread start for :", minor[ibecon]
         distance = []
@@ -18,11 +24,6 @@ def beconTracking(ibecon):
                         beaco = beacon.split(",")
                         if(beaco[3] == ibecon):
                                 if ((beaco[2] == major) and (beaco[3] in minor)):
-                                        rssi = int(beaco[5])
-                                        rssi *= -1
-                                        tx_rate = int(beaco[4])
-                                        tx_rate *= -1
-                                        rat = float(rssi) / tx_rate
                                         if (i == 3):
                                                 distance.sort()
                                                 print distance
@@ -33,6 +34,7 @@ def beconTracking(ibecon):
                                                 distance = []
                                                 i = 1
                                         else:
+                                                rat = ratio(beaco[5], beaco[4])
                                                 if (rat < 1):
                                                         i += 1
                                                         dist = math.pow(rat, 10)
