@@ -44,7 +44,7 @@ def beconTracking(ibecon):
 while True:
     for beacon in scanner.scan():
         beaco = beacon.split(",")
-        if(beaco[3] not  in startUnit):
+        if(beaco[3] not in startUnit):
                 if ((beaco[2] == "4660") and (beaco[3] in units)):
                         startUnit.append(beaco[3])
                         thread.start_new_thread(beconTracking,(beaco[3],))
