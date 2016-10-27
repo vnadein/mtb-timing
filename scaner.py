@@ -5,18 +5,19 @@ from time import time
 import thread
 
 scanner = Scanner(loops=1)
-units = {"6966": "1", "6967": "2", "6968" : "3", "6969" : "4"}
+major = "4660"
+minor = {"6966": "1", "6967": "2", "6968" : "3", "6969" : "4"}
 startUnit = []
 
 def beconTracking(ibecon):
-        print "Thread start for :", units[ibecon]
+        print "Thread start for :", minor[ibecon]
         distance = []
         i = 1
         while True:
                 for beacon in scanner.scan():
                         beaco = beacon.split(",")
                         if(beaco[3] == ibecon):
-                                if ((beaco[2] == "4660") and (beaco[3] in units)):
+                                if ((beaco[2] == major) and (beaco[3] in minor)):
                                         rssi = int(beaco[5])
                                         rssi *= -1
                                         tx_rate = int(beaco[4])
@@ -27,7 +28,7 @@ def beconTracking(ibecon):
                                                 print distance
                                                 if(distance[0] < 1):
                                                         raceTime = float(time())
-                                                        print units[beaco[3]], ": ", raceTime
+                                                        print minor[beaco[3]], ": ", raceTime
                                                         return True
                                                 distance = []
                                                 i = 1
@@ -45,6 +46,6 @@ while True:
     for beacon in scanner.scan():
         beaco = beacon.split(",")
         if(beaco[3] not in startUnit):
-                if ((beaco[2] == "4660") and (beaco[3] in units)):
+                if ((beaco[2] == major) and (beaco[3] in minor)):
                         startUnit.append(beaco[3])
                         thread.start_new_thread(beconTracking,(beaco[3],))
