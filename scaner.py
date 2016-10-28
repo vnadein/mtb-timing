@@ -9,6 +9,8 @@ major = "4660"
 minor = {"6966": "1", "6967": "2", "6968" : "3", "6969" : "4"}
 startUnit = []
 
+print "Start searching racers..."
+
 def ratio(rssi,tx_rate):
         rssi = int(rssi) * -1
         tx_rate = int(tx_rate) * -1
@@ -16,7 +18,7 @@ def ratio(rssi,tx_rate):
         return ratio
 
 def beconTracking(ibecon):
-        print "Thread start for :", minor[ibecon]
+        print "Found racers number :", minor[ibecon]
         distance = []
         i = 1
         while True:
@@ -26,7 +28,7 @@ def beconTracking(ibecon):
                                 if ((beaco[2] == major) and (beaco[3] in minor)):
                                         if (i == 3):
                                                 distance.sort()
-                                                print distance
+                                                print minor[beaco[3]], ": ", distance
                                                 if(distance[0] < 1):
                                                         raceTime = float(time())
                                                         print minor[beaco[3]], ": ", raceTime
