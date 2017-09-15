@@ -36,6 +36,7 @@ class Sync:
                 print('\nrecieved data: \n', data.decode('cp1251'))
                 return data
 
-sync = Sync()
-conn, addr = sync.get_connection(sync.port)
-sync.resieve(conn)
+    def start_sync(self):
+        sync = Sync()
+        conn, addr = sync.get_connection(sync.port)
+        sync.resieve(conn)
