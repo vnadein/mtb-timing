@@ -1,6 +1,5 @@
 from proximity import *
 import math
-import datetime
 from time import time
 from threading import Thread
 

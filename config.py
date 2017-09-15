@@ -3,7 +3,7 @@ from logger_init import *
 # starting logger
 log = ColoredLogger().root_logger
 
-using_db = True
+using_db = False
 online_sync = False
 port = 7777
 race_laps = 1

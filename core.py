@@ -6,6 +6,7 @@ from SyncModule import Sync
 class Core:
     def __init__(self):
         self.current_lap = 0
+        self.all_riders_list = []
         self.current_riders_list = []
         self.race_laps = race_laps
         self.thread_controller = SystemThreads()
@@ -17,8 +18,16 @@ class Core:
             # sync with db here
             pass
         else:
-            # generate or input riders id`s
-            pass
+            while True:
+                inp_num = input('Enter rider number: ')
+                if 'q' in inp_num or 'Q' in inp_num:
+                    break
+                try:
+                    inp_num = int(inp_num)
+                except exception as e:
+                    log.info(e)
+                self.all_riders_list.append(inp_num)
+                print('riders', self.all_riders_list)
         # TODO: need add starting riders list func
         self.thread_controller.start_thread(self.sync_module.start_sync)
 
