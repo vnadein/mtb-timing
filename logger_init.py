@@ -1,3 +1,4 @@
+#!/usr/bin/python3.5
 from logging import *
 import logging.handlers
 from painter import *

@@ -1,3 +1,4 @@
+#!/usr/bin/python3.5
 import socket
 from config import port
 from time import sleep

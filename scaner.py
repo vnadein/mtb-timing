@@ -1,3 +1,4 @@
+#!/usr/bin/python3.5
 from proximity import *
 import math
 from time import time
