@@ -111,7 +111,7 @@ def parse_events(sock, loop_count=100):
     myFullList = []
     for i in range(0, loop_count):
         pkt = sock.recv(255)
-        print('pkt = ', pkt)
+        # print('pkt = ', pkt)
         ptype, event, plen = struct.unpack("BBB", pkt[:3])
         # print "--------------"
         if event == bluez.EVT_INQUIRY_RESULT_WITH_RSSI:
@@ -121,14 +121,14 @@ def parse_events(sock, loop_count=100):
         elif event == bluez.EVT_DISCONN_COMPLETE:
             i = 0
         elif event == LE_META_EVENT:
-            print('pkt3 = ', pkt[3])
+            # print('pkt3 = ', pkt[3])
             subevent = pkt[3]
             pkt = pkt[4:]
             if subevent == EVT_LE_CONN_COMPLETE:
                 le_handle_connection_complete(pkt)
             elif subevent == EVT_LE_ADVERTISING_REPORT:
-                print("advertising report")
-                print('pkt0 = ', pkt[0])
+                # print("advertising report")
+                # print('pkt0 = ', pkt[0])
                 num_reports = pkt[0]
                 report_pkt_offset = 0
                 for report in range(0, num_reports):

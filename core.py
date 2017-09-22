@@ -2,6 +2,7 @@
 from config import *
 from sthreads import SystemThreads
 from SyncModule import Sync
+from scaner import RaceTrackingModule
 
 
 class Core:
@@ -12,6 +13,7 @@ class Core:
         self.race_laps = race_laps
         self.thread_controller = SystemThreads()
         self.sync_module = Sync()
+        self.t_module = RaceTrackingModule(self.thread_controller)
 
     def start_race(self):
         self.current_lap += 1
@@ -30,7 +32,11 @@ class Core:
                 self.all_riders_list.append(inp_num)
                 print('riders', self.all_riders_list)
         # TODO: need add starting riders list func
+        log.info("[core] Rider list ready!")
         self.thread_controller.start_thread(self.sync_module.start_sync)
+        log.info("[core] Sync module started!")
+        self.thread_controller.start_thread(self.t_module.start)
+        log.info("[core] Racer track module started!")
 
     def finish_race(self):
         self.current_lap = 0
