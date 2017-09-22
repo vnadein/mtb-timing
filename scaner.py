@@ -16,7 +16,7 @@ class RaceTrackingModule:
                 self.major = "4660"
                 self.minor = racer_id_list
                 self.startUnit = []
-                self.race_threads = race_thread_module
+                self.race_thread_module = race_thread_module
 
         def ratio(self, rssi, tx_rate):
                 rssi = int(rssi) * -1
@@ -28,7 +28,8 @@ class RaceTrackingModule:
                 print("Found racers number :", self.minor[ibecon])
                 distance = []
                 i = 1
-                while True:
+                track = True
+                while track:
                         for beacon in self.scanner.scan():
                                 beaco = beacon.split(",")
                                 if beaco[3] == ibecon and ((beaco[2] == self.major) and (beaco[3] in self.minor)):
@@ -38,7 +39,7 @@ class RaceTrackingModule:
                                                 if distance[0] < 1:
                                                         race_time = float(time())
                                                         print('\n[sys] racer ', self.minor[beaco[3]], ' finished  -time', ": ", race_time, '\n')
-                                                        return
+                                                        track = False
                                                 distance = []
                                                 i = 1
                                         else:
@@ -59,10 +60,11 @@ class RaceTrackingModule:
                 while True:
                     for beacon in self.scanner.scan():
                         beaco = beacon.split(",")
-                        print('beaco', beaco[3])
-                        print('startunit', self.startUnit)
+                        #print('beaco', beaco[3])
+                        #print('startunit', self.startUnit)
                         if beaco[3] not in self.startUnit:
                                 if (beaco[2] == self.major) and (beaco[3] in self.minor):
                                         self.startUnit.append(beaco[3])
-                                        self.race_threads.start_thread(self.becon_tracking(beaco[3]))
+                                        self.race_thread_module.start_thread(self.becon_tracking(beaco[3]), 'ibeacon '+beaco[3])
+                                        #print('th finished!!!!')
                                         #thread = Thread(self.becon_tracking(beaco[3])).start()

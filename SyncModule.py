@@ -24,7 +24,7 @@ class Sync:
                     str(conn), str(addr)))
                     return conn, addr
                 except Exception as e:
-                    print(e)
+                    #print(e)
                     sleep(0.246)
 
     def resieve(self, conn):
