@@ -18,7 +18,9 @@ class SystemThreads:
             self.sys_threads[name] = Thread(target=func, name=name)
             self.sys_threads[name].start()
         else:
-            log.warning('\n\n '+paint('[sys][threads]', GREEN)+paint(' thread ' + str(name) + ' is already running!', CYAN)+'\n')
+            log.warning('\n\n '+paint('[sys][threads]', GREEN) +
+                        paint(' thread ' + str(name) +
+                        ' is already running!', CYAN)+'\n')
 
     def join(self, name):
         th = self.sys_threads.get(name)

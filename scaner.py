@@ -60,11 +60,7 @@ class RaceTrackingModule:
                 while True:
                     for beacon in self.scanner.scan():
                         beaco = beacon.split(",")
-                        #print('beaco', beaco[3])
-                        #print('startunit', self.startUnit)
-                        if beaco[3] not in self.startUnit:
-                                if (beaco[2] == self.major) and (beaco[3] in self.minor):
-                                        self.startUnit.append(beaco[3])
-                                        self.race_thread_module.start_thread(self.becon_tracking(beaco[3]), 'ibeacon '+beaco[3])
-                                        #print('th finished!!!!')
-                                        #thread = Thread(self.becon_tracking(beaco[3])).start()
+                        if beaco[3] not in self.startUnit and (beaco[2] == self.major) and (beaco[3] in self.minor):
+                                self.startUnit.append(beaco[3])
+                                self.race_thread_module.start_thread(self.becon_tracking(beaco[3]),
+                                                                     'ibeacon '+beaco[3])

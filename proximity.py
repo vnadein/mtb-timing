@@ -4,8 +4,8 @@ import bluetooth._bluetooth as bluez
 
 
 class Scanner:
-    def __init__(self, deviceId=0, loops = 1):
-        self.deviceId = deviceId
+    def __init__(self, device_id=0, loops=1):
+        self.deviceId = device_id
         self.loops = loops
         try:
             self.sock = bluez.hci_open_dev(self.deviceId)

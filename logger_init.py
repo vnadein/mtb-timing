@@ -46,16 +46,16 @@ class ColoredLogger:
         )
 
         log_time = time.strftime("%Y%m%d_%H%M%S",
-                time.localtime(time.time()))
+                                 time.localtime(time.time()))
 
         handlers = [
-          logging.handlers.RotatingFileHandler(
-            LOG_PATH + '/Core_{0}.log'.format(log_time),
-            encoding='utf8',
-            maxBytes=4194304,
-            backupCount=9),
-          logging.StreamHandler()
-        ]
+            logging.handlers.RotatingFileHandler(
+                                                 LOG_PATH + '/Core_{0}.log'.format(log_time),
+                                                 encoding='utf8',
+                                                 maxBytes=4194304,
+                                                 backupCount=9),
+            logging.StreamHandler()
+            ]
 
         self.root_logger = ColoredLogging('colored')
         self.root_logger.setLevel(logging_level)
