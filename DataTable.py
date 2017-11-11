@@ -22,81 +22,79 @@ class DataTable:
                 con.close()
                 self.create_db()
 
-    def create_db(self):
-        log.info(paint('[sys][DB]', GREEN) + ' Creating database')
+    #  on test
+    def db_worker(self, request, mode):
         con = sqlite3.connect(self.file_path)
         cur = con.cursor()
         try:
-            cur.execute(
-                'CREATE TABLE Riders ('
-                'id INTEGER PRIMARY KEY,'
-                ' firstName VARCHAR(100),'
-                ' secondName VARCHAR(30),'
-                ' number INTEGER,'
-                ' rider_id INTEGER NOT NULL UNIQUE,'
-                ' rider_time_start INTEGER,'
-                ' rider_time_finish INTEGER)')
-            con.commit()
+            ret = cur.execute(request)
+            if mode == 'commit':
+                con.commit()
+            elif mode == 'fetchall':
+                ret = cur.fetchone()
+            elif mode == 'fetchone':
+                ret = cur.fetchone()
+            con.close()
+            return ret
+        except Exception as e:
+            log.error(paint('[sys][DB][ERROR] ', RED) + str(e))
+            con.close()
+            return False
+
+    def create_db(self):
+        log.info(paint('[sys][DB]', GREEN) + ' Creating database')
+        try:
+            request = (
+                'CREATE TABLE Riders (id INTEGER PRIMARY KEY,'
+                ' firstName VARCHAR(100), secondName VARCHAR(30),'
+                ' number INTEGER, rider_id INTEGER NOT NULL UNIQUE,'
+                ' rider_time_start INTEGER, rider_time_finish INTEGER)')
+            self.db_worker(request=request, mode='commit')
             log.info(paint('[sys][DB]', GREEN) + ' Table "Riders" - Created!')
         except Exception as e:
-            log.error(paint('[sys][DB][ERROR 1]', GREEN), e)
-            con.close()
-
+            log.error(paint('[sys][DB][ERROR 1] ', RED) + str(e))
         try:
-            cur.execute(
-                'CREATE TABLE ChipList ('
-                'id INTEGER PRIMARY KEY,'
-                ' chip_id INTEGER NOT NULL UNIQUE,'
-                ' in_use BOOLEAN)')
-            con.commit()
+            request = (
+                'CREATE TABLE ChipList (id INTEGER PRIMARY KEY,'
+                ' chip_id INTEGER NOT NULL UNIQUE, in_use BOOLEAN)')
+            self.db_worker(request=request, mode='commit')
             log.info(paint('[sys][DB]', GREEN) + ' Table "ChipList" - Created!')
         except Exception as e:
             log.error(paint('[sys][DB][ERROR 2]', RED), e)
-            con.close()
-
         try:
-            cur.execute('SELECT * FROM Riders')
+            self.db_worker(request='SELECT * FROM Riders', mode='fetchall')
             log.info(paint('[sys][DB]', GREEN) + ' Database created!')
         except Exception as e:
             log.error(paint('[sys][DB][ERROR 3]', RED), e)
-            con.close()
-        con.close()
 
     # do not delete
     def add_new_rider(self, firstName, secondName, number):
         con = sqlite3.connect(self.file_path)
         cur = con.cursor()
         try:
-            cur.execute("SELECT chip_id FROM ChipList WHERE in_use=?", '0')
-            chip_list = cur.fetchone()
+            chip_list = self.db_worker(request="SELECT chip_id FROM ChipList WHERE in_use=0", mode='fetchone')
             if chip_list:
                 try:
-                    cur.execute("SELECT rider_id FROM Riders WHERE rider_id=?", chip_list[0])
-                    if cur.fetchone():
+                    if self.db_worker(request="SELECT rider_id FROM Riders WHERE rider_id={}".format(chip_list[0]),
+                                      mode='fetchone'):
                         try:
-                            cur.execute("DELETE FROM Riders WHERE rider_id=?", chip_list[0])
-                            con.commit()
+                            self.db_worker(request=("DELETE FROM Riders WHERE rider_id={}".format(chip_list[0])),
+                                           mode='commit')
                         except Exception as e:
-                            log.error(paint('[sys][DB][ERROR 4]', RED) + e)
-                            con.close()
+                            log.error(paint('[sys][DB][ERROR 4] ', RED) + str(e))
                             return False
                     else:
                         data = (firstName, secondName, number, chip_list[0])
                 except Exception as e:
-                    log.error(paint('[sys][DB][ERROR 5]', RED) + e)
-                    con.close()
+                    log.error(paint('[sys][DB][ERROR 5] ', RED) + str(e))
                     return False
             else:
                 log.error(paint('[sys][DB][ERROR 6]', RED) + 'No chip_id are avaliable!')
-                con.close()
                 return False
             try:
-                cur.execute("INSERT INTO Riders("
-                            "firstName, "
-                            "secondName, "
-                            "number, "
-                            "rider_id) "
-                            "VALUES (?, ?, ?, ?)", data)
+                cur.execute("INSERT INTO Riders(firstName, "
+                            "secondName, number, "
+                            "rider_id) VALUES (?, ?, ?, ?)", data)
             except sqlite3.DatabaseError as e:
                 log.error(paint('[sys][DB][ERROR 7]', RED) + str(e))
                 con.close()
@@ -105,17 +103,15 @@ class DataTable:
                 con.commit()
                 log.info(paint('[sys][DB] ', GREEN) + ' Rider added!')
             try:
-                cur.execute("SELECT chip_id FROM ChipList")
-                print('CHIPLIST! - ', cur.fetchall())
                 cur.execute("UPDATE ChipList SET in_use=? WHERE chip_id=?", ('1', chip_list[0]))
                 con.commit()
                 log.info(paint('[sys][DB]', GREEN) + ' In_use flag added!')
             except Exception as e:
-                log.error(paint('[sys][DB][ERROR 8]', RED) + e)
+                log.error(paint('[sys][DB][ERROR 8]', RED) + str(e))
                 con.close()
                 return False
         except Exception as e:
-            log.error(paint('[sys][DB][ERROR 9]', RED), e)
+            log.error(paint('[sys][DB][ERROR 9] ', RED), e)
             if 'UNIQUE constraint failed: Riders.rider_id' in str(e):
                 log.info('rider_id already exists! Try to change rider_id!')
             con.close()
@@ -168,9 +164,13 @@ class DataTable:
             return res[0]
 
     # internal functions
+    def get_internal_riderslist(self):
+        ret = self.db_worker(request="SELECT rider_id FROM Riders", mode='fetchall')
+        return ret
+
     def set_start_time(self, start_ts, rider_id):
-        conn = sqlite3.connect(self.file_path)
-        cur = conn.cursor()
+        con = sqlite3.connect(self.file_path)
+        cur = con.cursor()
         data = (start_ts, rider_id)
         try:
             cur.execute("SELECT rider_id FROM Riders WHERE rider_id={}".format(rider_id))
@@ -178,16 +178,16 @@ class DataTable:
                 cur.execute("UPDATE Riders SET rider_time_start=? WHERE rider_id=?", data)
             else:
                 log.error(paint('[sys][DB][ERROR 12]', RED) + 'Rider_id was not found!')
-                conn.close()
+                con.close()
                 return False
         except sqlite3.DatabaseError as err:
             log.error(paint('[sys][DB][ERROR 13]', RED) + err)
-            conn.close()
+            con.close()
             return False
         else:
             log.info(paint('[sys][DB]', GREEN) + ' Rider start_ts was set!')
-            conn.commit()
-            conn.close()
+            con.commit()
+            con.close()
             return True
 
     def set_finish_ts(self, finish_ts, rider_id):
@@ -214,38 +214,28 @@ class DataTable:
 
     # clearing functions
     def clear_all_riders(self):
-        conn = sqlite3.connect(self.file_path)
-        cur = conn.cursor()
         try:
-            cur.execute('DELETE FROM Riders')
+            self.db_worker(request='DELETE FROM Riders', mode='commit')
         except sqlite3.DatabaseError as err:
             log.error(paint('[sys][DB][ERROR 16]', RED) + err)
-            conn.close()
             return False
         else:
             log.info(paint('[sys][DB]', GREEN) + ' Riders table cleared!')
-            conn.commit()
-            conn.close()
+            self.__clear_chip_flag()
             return True
 
-    def clear_chip_flag(self):
-        conn = sqlite3.connect(self.file_path)
-        cur = conn.cursor()
+    def __clear_chip_flag(self):
         try:
-            cur.execute("UPDATE ChipList SET in_use=?", '0')
+            self.db_worker(request="UPDATE ChipList SET in_use=0", mode='commit')
         except sqlite3.DatabaseError as e:
             log.error(paint('[sys][DB][ERROR 17]', RED), e)
-            conn.close()
             return False
-        else:
-            log.info(paint('[sys][DB]', GREEN) + ' Chip flag cleared!')
-            conn.commit()
-            conn.close()
-            return True
+        log.info(paint('[sys][DB]', GREEN) + ' Chip flag cleared!')
+        return True
 
 if __name__ == '__main__':
     db = DataTable()
     #db.clear_chip_flag()
     #db.add_chip(4661)
-    db.add_new_rider('r', 'a', 1, 1111)
+    #db.add_new_rider('r', 'a', 1)
     #db.clear_all_assignments()
