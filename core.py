@@ -15,9 +15,7 @@ class Core:
         self.thread_controller = SystemThreads()
         self.sync_module = Sync()
         self.db = DataTable()
-        self.t_module = RaceTrackingModule(self.thread_controller)
-        # TODO: добавить импорт списка гонщиков из базы
-        # self.t_module = RaceTrackingModule(self.thread_controller, racer_id_list='')
+        self.t_module = RaceTrackingModule(self.thread_controller, racer_id_list=self.db.get_internal_riderslist())
 
     def start_race(self):
         self.current_lap += 1

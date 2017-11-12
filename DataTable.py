@@ -1,4 +1,5 @@
 import sqlite3
+import re
 from config import *
 
 
@@ -31,7 +32,7 @@ class DataTable:
             if mode == 'commit':
                 con.commit()
             elif mode == 'fetchall':
-                ret = cur.fetchone()
+                ret = cur.fetchall()
             elif mode == 'fetchone':
                 ret = cur.fetchone()
             con.close()
@@ -166,7 +167,9 @@ class DataTable:
     # internal functions
     def get_internal_riderslist(self):
         ret = self.db_worker(request="SELECT rider_id FROM Riders", mode='fetchall')
-        return ret
+        ret_formated = re.findall(r'\d{4}', str(ret))
+        print(ret)
+        return ret_formated
 
     def set_start_time(self, start_ts, rider_id):
         con = sqlite3.connect(self.file_path)
