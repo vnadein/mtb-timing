@@ -139,32 +139,7 @@ class DataTable:
             con.close()
             return True
 
-#  TODO: do not delete
-    # не доделано
-    def find_rider_by_assignment(self, first_name, last_name, rider_num=0):
-        conn = sqlite3.connect(self.file_path)
-        c = conn.cursor()
-        if not rider_num:
-            data = (first_name, last_name)
-            c.execute('SELECT number'
-                      ' FROM Riders'
-                      ' WHERE firstName=?'
-                      ' AND lastName=?', data)
-        else:
-            data = (first_name, last_name, rider_num)
-            c.execute('SELECT number'
-                      ' FROM Riders'
-                      ' WHERE firstName=?'
-                      ' AND secondName=?'
-                      ' AND rider_id=?', data)
-        res = c.fetchone()
-        conn.close()
-        if res is None:
-            return None
-        else:
-            return res[0]
-
-    # internal functions
+    #  INTERNAL FUNC
     def get_internal_riderslist(self):
         ret = self.db_worker(request="SELECT rider_id FROM Riders", mode='fetchall')
         ret_formated = re.findall(r'\d{4}', str(ret))
@@ -234,6 +209,15 @@ class DataTable:
             log.error(paint('[sys][DB][ERROR 17]', RED), e)
             return False
         log.info(paint('[sys][DB]', GREEN) + ' Chip flag cleared!')
+        return True
+
+    def clear_chip_list(self):
+        try:
+            self.db_worker(request='DELETE FROM ChipList', mode='commit')
+        except sqlite3.DatabaseError as e:
+            log.error(paint('[sys][DB][ERROR 18]', RED), e)
+            return False
+        log.info(paint('[sys][DB]', GREEN) + ' Chip list cleared!')
         return True
 
 if __name__ == '__main__':

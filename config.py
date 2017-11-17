@@ -6,7 +6,7 @@ log = ColoredLogger().root_logger
 # END #
 
 # DB options
-using_db = False
+test_mode = True
 db_test = True
 DATATABLE_PATH = 'db/'
 DATATABLE_FILENAME = 'race_db.db'
